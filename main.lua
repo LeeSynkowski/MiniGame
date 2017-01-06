@@ -3,5 +3,13 @@
 -- main.lua
 --
 -----------------------------------------------------------------------------------------
+-- Start Debugging
+--require('mobdebug').start()
 
--- Your code here
+local composer = require( "composer" )
+
+composer.gotoScene( "Scenes.FirstType" )
+
+
+
+ 
