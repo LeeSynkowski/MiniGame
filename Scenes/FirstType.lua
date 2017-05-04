@@ -16,6 +16,9 @@ system.activate( "multitouch" )
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
+local touchTracker = {}
+
+
 -- Printing touch info Touch event listener
 local function touchListener( event )
  
@@ -29,14 +32,20 @@ end
 -- startRectangle Touch event listener
 local function startRectangleTouchListener( event )
  
-    print( "Touched Start Rectangle" )
+    --print( "Touched Start Rectangle" )
+    if (table.getn(touchTracker) == 0 ) then
+      table.insert(touchTracker,1)
+    end
     --return true
 end
 
 -- finishRectangle Touch event listener
 local function finishRectangleTouchListener( event )
  
-    print( "Touched Finish Rectangle" )
+    --print( "Touched Finish Rectangle" )
+    if (table.getn(touchTracker) == 1 ) then
+      table.insert(touchTracker,2)
+    end
     --return true
 end
 
@@ -58,20 +67,38 @@ function scene:create( event )
     sceneGroup:insert( background )
     
     -- Use basic fingerPaint canvas to track touches
-    local canvas = fingerPaint.newCanvas()
-    canvas.setCanvasColor(0,0,0,0)
-    canvas.setPaintColor(205/255,75/255,244/255,1)
-    sceneGroup:insert( canvas )
+    --local canvas = fingerPaint.newCanvas()
+    --canvas.setCanvasColor(0,0,0,0)
+    --canvas.setPaintColor(205/255,75/255,244/255,1)
+    --sceneGroup:insert( canvas )
     
     -- Create start and finish rectangles with their own touch listeners
-    local startRectangle = display.newRect( display.contentCenterX, display.contentCenterY + display.actualContentHeight/4, 20, 20 )
+    local rect1x = math.random(display.actualContentWidth-20)
+    local rect2x = math.random(display.actualContentWidth-20)    
+    local rect1y = math.random(display.contentCenterY-20)
+    local rect2y = math.random(display.contentCenterY,display.actualContentHeight-30)      
+    
+    --rectangle
+    --local startRectangle = display.newRect( display.contentCenterX, display.contentCenterY + display.actualContentHeight/4, 20, 20 )
+    local startRectangle = display.newRect( rect1x, rect1y, 20, 20 )
     startRectangle:setFillColor( 0, 1, 0 )
     startRectangle:addEventListener( "touch", startRectangleTouchListener)
     sceneGroup:insert( startRectangle )
-    local finishRectangle = display.newRect( display.contentCenterX, display.contentCenterY - display.actualContentHeight/4, 20, 20 )
+    --label
+    local label1 = display.newText("1", rect1x, rect1y, 20, 20 )
+    label1:setFillColor( 0, 0, 0 )
+    sceneGroup:insert( label1 )    
+    
+    --local finishRectangle = display.newRect( display.contentCenterX, display.contentCenterY - display.actualContentHeight/4, 20, 20,native.systemFont, 20 )
+    
+    local finishRectangle = display.newRect( rect2x, rect2y, 20, 20,native.systemFont, 20 )    
     finishRectangle:setFillColor( 1, 0, 0 )
     finishRectangle:addEventListener( "touch", finishRectangleTouchListener)
-    sceneGroup:insert( finishRectangle )  
+    sceneGroup:insert( finishRectangle ) 
+    
+    local label2 = display.newText("2", rect2x, rect2y, 20, 20 )
+    label1:setFillColor( 0, 0, 0 )
+    sceneGroup:insert( label2 )   
 end
  
  
