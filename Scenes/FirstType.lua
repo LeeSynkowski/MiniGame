@@ -19,13 +19,13 @@ system.activate( "multitouch" )
 local touchTracker = {} --table.getn(touchTracker) find length of a table, table.insert(touchTracker,1) insert
 local lastBlock = 0
 
-local statusText
+local statusText = display.newText("", display.contentCenterX, 15)
 
 local function statusUpdate( ok )
   if (ok == true) then
-    statusText:text("Good!")
+    statusText.text = "Good!"
   else
-    statusText:text("Bad!")
+    statusText.text = "Bad!"
   end
 end
 
@@ -33,14 +33,16 @@ local lastTime = system.getTimer()
 
 local function checkTiming()
       local currentTime = system.getTimer()
+      print("Current time: " .. currentTime)
+      print("Last time: " .. lastTime)
       local timeDiff = math.abs(lastTime - currentTime)
+      lastTime = currentTime
       print(timeDiff)
       if (timeDiff < 1500) then
         return true
       else
         return false
       end
-      lastTime = currentTime
       return true
 end
 
@@ -123,6 +125,35 @@ function scene:create( event )
     statusText = display.newText("NOTHING YET", display.contentCenterX, 15)
     statusText:setFillColor( 1, 1, 1 )
     sceneGroup:insert(statusText)
+    
+    
+    --messing with sprite sheet
+    local sheetOptions =
+      {
+          width = 67,
+          height = 105,
+          numFrames = 6
+      }
+      
+    local sheet_Ryu = graphics.newImageSheet( "ryu-sprite.png", sheetOptions )
+    
+    local sequences_Ryu = {
+        -- consecutive frames sequence
+        {
+            name = "normalRun",
+            start = 1,
+            count = 5,
+            time = 800,
+            loopCount = 0,
+            loopDirection = "forward"
+        }
+    }
+
+    local ryuSprite= display.newSprite( sheet_Ryu, sequences_Ryu )
+    ryuSprite:play()
+    ryuSprite.x = display.contentCenterX
+    ryuSprite.y = 100
+-- sequences table
 end
  
  
