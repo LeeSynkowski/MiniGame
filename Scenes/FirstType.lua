@@ -16,37 +16,52 @@ system.activate( "multitouch" )
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
-local touchTracker = {}
+local touchTracker = {} --table.getn(touchTracker) find length of a table, table.insert(touchTracker,1) insert
+local lastBlock = 0
 
+local statusText
 
--- Printing touch info Touch event listener
-local function touchListener( event )
- 
-    print( "Phase: " .. event.phase )
-    print( "Location: " .. tostring(event.x) .. "," .. tostring(event.y) )
-    print( "Unique touch ID: " .. tostring(event.id) )
-    print( "----------" )
-    --return true
+local function statusUpdate( ok )
+  if (ok == true) then
+    statusText:text("Good!")
+  else
+    statusText:text("Bad!")
+  end
+end
+
+local lastTime = system.getTimer()
+
+local function checkTiming()
+      local currentTime = system.getTimer()
+      local timeDiff = math.abs(lastTime - currentTime)
+      print(timeDiff)
+      if (timeDiff < 1500) then
+        return true
+      else
+        return false
+      end
+      lastTime = currentTime
+      return true
 end
 
 -- startRectangle Touch event listener
 local function startRectangleTouchListener( event )
- 
-    --print( "Touched Start Rectangle" )
-    if (table.getn(touchTracker) == 0 ) then
-      table.insert(touchTracker,1)
+    if ( lastBlock == 1 ) then
+      lastBlock = 0
+      statusUpdate(checkTiming())
+      print("Switched blocks to 0")
+      --print(timer)
     end
-    --return true
 end
 
 -- finishRectangle Touch event listener
 local function finishRectangleTouchListener( event )
- 
-    --print( "Touched Finish Rectangle" )
-    if (table.getn(touchTracker) == 1 ) then
-      table.insert(touchTracker,2)
+    if ( lastBlock == 0 ) then
+      lastBlock = 1
+      statusUpdate(checkTiming())
+      print("Switched blocks to 1")
+      --print(system.getTimer)
     end
-    --return true
 end
 
 -- -----------------------------------------------------------------------------------
@@ -73,10 +88,15 @@ function scene:create( event )
     --sceneGroup:insert( canvas )
     
     -- Create start and finish rectangles with their own touch listeners
-    local rect1x = math.random(display.actualContentWidth-20)
-    local rect2x = math.random(display.actualContentWidth-20)    
-    local rect1y = math.random(display.contentCenterY-20)
-    local rect2y = math.random(display.contentCenterY,display.actualContentHeight-30)      
+    --local rect1x = math.random(display.actualContentWidth-20)
+    --local rect2x = math.random(display.actualContentWidth-20)    
+    --local rect1y = math.random(display.contentCenterY-20)
+    --local rect2y = math.random(display.contentCenterY,display.actualContentHeight-30)    
+  
+    local rect1x = display.actualContentWidth/3
+    local rect2x = 2 * display.actualContentWidth/3  
+    local rect1y = display.contentCenterY
+    local rect2y = display.contentCenterY
     
     --rectangle
     --local startRectangle = display.newRect( display.contentCenterX, display.contentCenterY + display.actualContentHeight/4, 20, 20 )
@@ -98,7 +118,11 @@ function scene:create( event )
     
     local label2 = display.newText("2", rect2x, rect2y, 20, 20 )
     label1:setFillColor( 0, 0, 0 )
-    sceneGroup:insert( label2 )   
+    sceneGroup:insert( label2 )
+    
+    statusText = display.newText("NOTHING YET", display.contentCenterX, 15)
+    statusText:setFillColor( 1, 1, 1 )
+    sceneGroup:insert(statusText)
 end
  
  
