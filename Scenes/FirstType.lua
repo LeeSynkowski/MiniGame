@@ -15,6 +15,11 @@ system.activate( "multitouch" )
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
+local function onAccelerate( event )
+	print("X Gravity : " .. event.xGravity )
+	print("Y Gravity : " .. event.yGravity )
+end
+Runtime:addEventListener ("accelerometer", onAccelerate);
 
 local touchTracker = {} --table.getn(touchTracker) find length of a table, table.insert(touchTracker,1) insert
 local lastBlock = 0
@@ -206,5 +211,5 @@ scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
 -- -----------------------------------------------------------------------------------
- 
+
 return scene
