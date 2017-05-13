@@ -24,7 +24,7 @@ Runtime:addEventListener ("accelerometer", onAccelerate);
 local touchTracker = {} --table.getn(touchTracker) find length of a table, table.insert(touchTracker,1) insert
 local lastBlock = 0
 
-local statusText = display.newText("", display.contentCenterX, 15)
+local statusText = display.newText("", display.contentCenterX, display.contentHeight- 16)
 
 local function statusUpdate( ok )
   if (ok == true) then
@@ -71,6 +71,16 @@ local function finishRectangleTouchListener( event )
     end
 end
 
+-- attack button Touch event listener
+local function attackButtonTouchListener( event )
+  statusText.text = "Attack!"
+end
+
+-- counter button Touch event listener
+local function counterButtonTouchListener( event )
+  statusText.text = "Counter!"
+end
+
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -81,53 +91,87 @@ function scene:create( event )
     local sceneGroup = self.view
     -- Code here runs when the scene is first created but has not yet appeared on screen
     
-    -- Create Background that tracks touches
-    local background = display.newRect( display.contentCenterX, display.contentCenterY, 280, 440 )
-    background:setFillColor( 0, 0, 0 )
-    --Add a touch listener to the object
-    --background:addEventListener( "touch", touchListener )
+    -- Create Background
+    local background = display.newRect( display.contentCenterX, 
+                                        display.contentCenterY, 
+                                        display.contentWidth,
+                                        display.contentHeight)
+    background:setFillColor( .1, .5, .5 )
     sceneGroup:insert( background )
+
+    local rect1X = display.contentWidth/6
+    local rect2X = 2 * display.contentWidth/6  
+    local rect1Y = 3 * display.contentHeight/4
+    local rect2Y = 3 * display.contentHeight/4
+    local rectWidth = 20
+    local rectHeight = 50
     
-    -- Use basic fingerPaint canvas to track touches
-    --local canvas = fingerPaint.newCanvas()
-    --canvas.setCanvasColor(0,0,0,0)
-    --canvas.setPaintColor(205/255,75/255,244/255,1)
-    --sceneGroup:insert( canvas )
+    local attackX = 4 * display.contentWidth/6
+    local attackY = 3 * display.contentHeight/4
+    local counterX = 5 * display.contentWidth/6
+    local counterY = 3 * display.contentHeight/4
+    local attackRadius = 20
+    local counterRadius = 20
     
-    -- Create start and finish rectangles with their own touch listeners
-    --local rect1x = math.random(display.actualContentWidth-20)
-    --local rect2x = math.random(display.actualContentWidth-20)    
-    --local rect1y = math.random(display.contentCenterY-20)
-    --local rect2y = math.random(display.contentCenterY,display.actualContentHeight-30)    
-  
-    local rect1x = display.actualContentWidth/3
-    local rect2x = 2 * display.actualContentWidth/3  
-    local rect1y = display.contentCenterY
-    local rect2y = display.contentCenterY
+    local baseRectX = display.contentCenterX
+    local baseRectY = (display.contentHeight/3)/2
+    local baseRectWidth = display.contentWidth/3
+    local baseRectHeight = display.contentHeight/3
     
-    --rectangle
-    --local startRectangle = display.newRect( display.contentCenterX, display.contentCenterY + display.actualContentHeight/4, 20, 20 )
-    local startRectangle = display.newRect( rect1x, rect1y, 20, 20 )
+    local baseCircleX = display.contentCenterX
+    local baseCircleY = (display.contentHeight/3)/2
+    local baseCircleRadius = display.contentHeight/12
+    
+    --Timing Start Rectangle
+    local startRectangle = display.newRect( rect1X, rect1Y, rectWidth, rectHeight )
     startRectangle:setFillColor( 0, 1, 0 )
     startRectangle:addEventListener( "touch", startRectangleTouchListener)
     sceneGroup:insert( startRectangle )
     --label
-    local label1 = display.newText("1", rect1x, rect1y, 20, 20 )
+    local label1 = display.newText("1", rect1X, rect1Y, rectWidth, rectHeight )
     label1:setFillColor( 0, 0, 0 )
     sceneGroup:insert( label1 )    
-    
-    --local finishRectangle = display.newRect( display.contentCenterX, display.contentCenterY - display.actualContentHeight/4, 20, 20,native.systemFont, 20 )
-    
-    local finishRectangle = display.newRect( rect2x, rect2y, 20, 20,native.systemFont, 20 )    
+
+    --Timing Finish Rectangle
+    local finishRectangle = display.newRect( rect2X, rect2Y, rectWidth, rectHeight,native.systemFont, 20 )    
     finishRectangle:setFillColor( 1, 0, 0 )
     finishRectangle:addEventListener( "touch", finishRectangleTouchListener)
     sceneGroup:insert( finishRectangle ) 
-    
-    local label2 = display.newText("2", rect2x, rect2y, 20, 20 )
+    --label
+    local label2 = display.newText("2", rect2X, rect2Y, rectWidth, rectHeight )
     label1:setFillColor( 0, 0, 0 )
     sceneGroup:insert( label2 )
     
-    statusText = display.newText("NOTHING YET", display.contentCenterX, 15)
+    --Attack Button
+    local attackButton = display.newCircle(attackX,attackY,attackRadius)
+    attackButton:setFillColor(0,0,1)
+    attackButton:addEventListener("touch",attackButtonTouchListener)
+    sceneGroup:insert(attackButton)
+    --label
+    local attackLabel = display.newText("Attack", attackX ,attackY , attackRadius, attackRadius )
+    label1:setFillColor( 0, 0, 0 )
+    sceneGroup:insert( attackLabel )    
+    
+    --Counter Button
+    local counterButton = display.newCircle(counterX,counterY,counterRadius)
+    counterButton:setFillColor(0,0,1)
+    counterButton:addEventListener("touch",counterButtonTouchListener)
+    sceneGroup:insert(counterButton)
+    --label
+    local counterLabel = display.newText("Counter", counterX, counterY, counterRadius, counterRadius )
+    label1:setFillColor( 0, 0, 0 )
+    sceneGroup:insert( counterLabel ) 
+    
+    --Base Display
+    local baseRectangle = display.newRect(baseRectX,baseRectY,baseRectWidth,baseRectHeight)
+    baseRectangle:setStrokeColor(0,0,0)
+    baseRectangle:setFillColor(1,1,1)
+    sceneGroup:insert(baseRectangle)
+    
+    local baseCircle = display.newCircle(baseCircleX,baseCircleY,baseCircleRadius)
+    
+    --Status Message Text
+    statusText = display.newText("NOTHING YET", display.contentCenterX, display.contentHeight- 16)
     statusText:setFillColor( 1, 1, 1 )
     sceneGroup:insert(statusText)
     
@@ -157,7 +201,7 @@ function scene:create( event )
     local ryuSprite= display.newSprite( sheet_Ryu, sequences_Ryu )
     ryuSprite:play()
     ryuSprite.x = display.contentCenterX
-    ryuSprite.y = 100
+    ryuSprite.y = display.contentCenterY
 -- sequences table
 end
  
