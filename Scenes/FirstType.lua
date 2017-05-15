@@ -15,16 +15,22 @@ system.activate( "multitouch" )
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
+local statusText = display.newText("", display.contentCenterX, display.contentHeight- 16)
+
 local function onAccelerate( event )
-	print("X Gravity : " .. event.xGravity )
-	print("Y Gravity : " .. event.yGravity )
+	statusText.text = "   Xgv: " .. string.format("%0.4f", event.xGravity) ..
+                    "   Ygv: " .. string.format("%0.4f", event.yGravity)  .. 
+                    "   Zgv: " .. string.format("%0.4f", event.zGravity) 
 end
+
 Runtime:addEventListener ("accelerometer", onAccelerate);
+
+local function baseTiltListener(event)
+  
+end
 
 local touchTracker = {} --table.getn(touchTracker) find length of a table, table.insert(touchTracker,1) insert
 local lastBlock = 0
-
-local statusText = display.newText("", display.contentCenterX, display.contentHeight- 16)
 
 local function statusUpdate( ok )
   if (ok == true) then
@@ -168,7 +174,10 @@ function scene:create( event )
     baseRectangle:setFillColor(1,1,1)
     sceneGroup:insert(baseRectangle)
     
-    local baseCircle = display.newCircle(baseCircleX,baseCircleY,baseCircleRadius)
+    baseCircle = display.newCircle(baseCircleX,baseCircleY,baseCircleRadius)
+    baseCircle:setFillColor(1,0,0)
+    sceneGroup:insert(baseCircle)
+
     
     --Status Message Text
     statusText = display.newText("NOTHING YET", display.contentCenterX, display.contentHeight- 16)
