@@ -15,12 +15,39 @@ system.activate( "multitouch" )
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
-local statusText = display.newText("", display.contentCenterX, display.contentHeight- 16)
+statusText = display.newText("", display.contentCenterX, display.contentHeight- 16)
+local baseRectX = display.contentCenterX
+local baseRectY = (display.contentHeight/3)/2
+local baseRectWidth = display.contentWidth/3
+local baseRectHeight = display.contentHeight/3
+
+local baseCircleX = display.contentCenterX
+local baseCircleY = (display.contentHeight/3)/2
+local baseCircleRadius = display.contentHeight/12
+
+local timingCircleX =  display.contentWidth/4
+local timingCircleY =  display.contentHeight/3
 
 local function onAccelerate( event )
 	statusText.text = "   Xgv: " .. string.format("%0.4f", event.xGravity) ..
                     "   Ygv: " .. string.format("%0.4f", event.yGravity)  .. 
-                    "   Zgv: " .. string.format("%0.4f", event.zGravity) 
+                    "   Zgv: " .. string.format("%0.4f", event.zGravity)
+                    
+  local maxCircleX = baseRectX + (baseRectWidth/2) - baseCircleRadius
+  local minCircleX = baseRectX - (baseRectWidth/2) + baseCircleRadius
+  
+  if (event.yGravity < -0.2 and (baseCircle.x < maxCircleX)) then
+    baseCircle.x = baseCircle.x + 3
+  end
+  
+  if (event.yGravity > 0.2 and (baseCircle.x > minCircleX)) then
+    baseCircle.x = baseCircle.x - 3
+  end
+  
+end
+
+local function timingSpriteListener(event)
+  print( event.name, event.target, event.phase, event.target.sequence)
 end
 
 Runtime:addEventListener ("accelerometer", onAccelerate);
@@ -119,14 +146,7 @@ function scene:create( event )
     local attackRadius = 20
     local counterRadius = 20
     
-    local baseRectX = display.contentCenterX
-    local baseRectY = (display.contentHeight/3)/2
-    local baseRectWidth = display.contentWidth/3
-    local baseRectHeight = display.contentHeight/3
-    
-    local baseCircleX = display.contentCenterX
-    local baseCircleY = (display.contentHeight/3)/2
-    local baseCircleRadius = display.contentHeight/12
+
     
     --Timing Start Rectangle
     local startRectangle = display.newRect( rect1X, rect1Y, rectWidth, rectHeight )
@@ -147,7 +167,7 @@ function scene:create( event )
     local label2 = display.newText("2", rect2X, rect2Y, rectWidth, rectHeight )
     label1:setFillColor( 0, 0, 0 )
     sceneGroup:insert( label2 )
-    
+        
     --Attack Button
     local attackButton = display.newCircle(attackX,attackY,attackRadius)
     attackButton:setFillColor(0,0,1)
@@ -185,15 +205,15 @@ function scene:create( event )
     sceneGroup:insert(statusText)
     
     
-    --messing with sprite sheet
-    local sheetOptions =
+    --ryu demo sprite sheet
+    local ryuSheetOptions =
       {
           width = 67,
           height = 105,
           numFrames = 6
       }
       
-    local sheet_Ryu = graphics.newImageSheet( "ryu-sprite.png", sheetOptions )
+    local sheet_Ryu = graphics.newImageSheet( "ryu-sprite.png", ryuSheetOptions )
     
     local sequences_Ryu = {
         -- consecutive frames sequence
@@ -211,7 +231,35 @@ function scene:create( event )
     ryuSprite:play()
     ryuSprite.x = display.contentCenterX
     ryuSprite.y = display.contentCenterY
--- sequences table
+
+    --------------------------- timing light sprite sheet
+     local timingLightSheetOptions =
+      {
+          width = 50,
+          height = 50,
+          numFrames = 2
+      }
+    local sheet_timing_light = graphics.newImageSheet( "timing-light-sprite.png", timingLightSheetOptions )
+    
+    local sequences_timing_light = {
+        -- consecutive frames sequence
+        {
+            name = "normalRun",
+            start = 1,
+            count = 2,
+            time = 800,
+            loopCount = 0,
+            loopDirection = "forward"
+        }
+    }
+    
+    local timingLightSprite = display.newSprite( sheet_timing_light, sequences_timing_light )
+    timingLightSprite:play()
+    timingLightSprite.x = timingCircleX
+    timingLightSprite.y = timingCircleY
+    
+    timingLightSprite:addEventListener("sprite" , timingSpriteListener)
+    
 end
  
  
