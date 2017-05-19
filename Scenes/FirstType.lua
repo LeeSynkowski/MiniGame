@@ -28,6 +28,8 @@ local baseCircleRadius = display.contentHeight/12
 local timingCircleX =  display.contentWidth/4
 local timingCircleY =  display.contentHeight/3
 
+local timingCorrect  = false
+
 local function onAccelerate( event )
 	statusText.text = "   Xgv: " .. string.format("%0.4f", event.xGravity) ..
                     "   Ygv: " .. string.format("%0.4f", event.yGravity)  .. 
@@ -44,6 +46,22 @@ local function onAccelerate( event )
     baseCircle.x = baseCircle.x - 3
   end
   
+end
+
+local function onStartSample( event )
+  timingCorrect  = false
+  if event.g == 1 then
+    timingCorrect  = true
+    print("Its green!")
+  end
+end
+
+local function onFinishSample( event )
+  timingCorrect  = false
+  if event.r == 1 then
+    timingCorrect  = true
+    print("Its red!")    
+  end
 end
 
 local function timingSpriteListener(event)
@@ -70,12 +88,16 @@ end
 local lastTime = system.getTimer()
 
 local function checkTiming()
-      local currentTime = system.getTimer()
-      print("Current time: " .. currentTime)
-      print("Last time: " .. lastTime)
-      local timeDiff = math.abs(lastTime - currentTime)
-      lastTime = currentTime
-      print(timeDiff)
+      --local currentTime = system.getTimer()
+      --print("Current time: " .. currentTime)
+      --print("Last time: " .. lastTime)
+
+      --local timeDiff = math.abs(lastTime - currentTime)
+      --lastTime = currentTime
+      --print(timeDiff)
+      
+     
+      
       if (timeDiff < 1500) then
         return true
       else
@@ -86,20 +108,26 @@ end
 
 -- startRectangle Touch event listener
 local function startRectangleTouchListener( event )
+    print("Start Phase " .. event.phase)
     if ( lastBlock == 1 ) then
       lastBlock = 0
-      statusUpdate(checkTiming())
-      print("Switched blocks to 0")
+      display.colorSample( timingCircleX, timingCircleY, onStartSample )
+      statusUpdate(timingCorrect)
+      --statusUpdate(checkTiming())
+      --print("Switched blocks to 0")
       --print(timer)
     end
 end
 
 -- finishRectangle Touch event listener
 local function finishRectangleTouchListener( event )
+    print("Finish Phase " .. event.phase)
     if ( lastBlock == 0 ) then
       lastBlock = 1
-      statusUpdate(checkTiming())
-      print("Switched blocks to 1")
+      display.colorSample( timingCircleX, timingCircleY, onFinishSample )
+      statusUpdate(timingCorrect)
+      --statusUpdate(checkTiming())
+      --print("Switched blocks to 1")
       --print(system.getTimer)
     end
 end
@@ -247,7 +275,7 @@ function scene:create( event )
             name = "normalRun",
             start = 1,
             count = 2,
-            time = 800,
+            time = 2000,
             loopCount = 0,
             loopDirection = "forward"
         }
@@ -258,7 +286,9 @@ function scene:create( event )
     timingLightSprite.x = timingCircleX
     timingLightSprite.y = timingCircleY
     
-    timingLightSprite:addEventListener("sprite" , timingSpriteListener)
+    
+    
+    --timingLightSprite:addEventListener("sprite" , timingSpriteListener)
     
 end
  
