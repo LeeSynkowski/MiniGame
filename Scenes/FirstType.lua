@@ -25,10 +25,15 @@ local baseCircleX = display.contentCenterX
 local baseCircleY = (display.contentHeight/3)/2
 local baseCircleRadius = display.contentHeight/12
 
-local timingCircleX =  display.contentWidth/4
-local timingCircleY =  display.contentHeight/3
+local timingCircleX =  25 
+local timingCircleY =  25 
+
+local timingIndicatorX = display.contentWidth/4
+local timingIndicatorY = display.contentHeight/3
 
 local timingCorrect  = false
+
+
 
 local function onAccelerate( event )
 	statusText.text = "   Xgv: " .. string.format("%0.4f", event.xGravity) ..
